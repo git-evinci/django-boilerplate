@@ -37,13 +37,13 @@ jobs:
         run: poetry install --no-interaction --no-root
 
       - name: Prepare env file
-        run: echo "SECRET_KEY=secret" > djpoe/djpoe/.env
+        run: echo "SECRET_KEY=secret" > app/core/.env
 
       - name: Ruff
         run: poetry run ruff check
 
       - name: Pylint
-        run: poetry run pylint tests djpoe/djpoe
+        run: poetry run pylint tests app/core
 
       - name: Pytest
         run: poetry run pytest --showlocals --tb=auto -ra --cov-branch --cov-report=term-missing --cov-fail-under=95
