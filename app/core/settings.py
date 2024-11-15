@@ -8,10 +8,15 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
 import random
 import string
 from pathlib import Path
+
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,22 +26,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = "django-insecure-6qer$11(f2qkr+wkm_y%gj4rp8x2u$vsx09q_)sw(pufj@lcfm"
+# SECRET_KEY = "django-insecure-6qer$11(f2qkr+wkm_y%gj4rp8x2u$vsx09q_)sw(pufj@lcfm"
 SECRET_KEY = str(os.getenv("SECRET_KEY"))
 if not SECRET_KEY:
     SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for i in range(32))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+# DEBUG = True
 DEBUG = os.getenv("DEBUG") == "True"
 
 # ALLOWED_HOSTS = [] #original code django
-#ALLOWED_HOSTS: list[str] = []
+# ALLOWED_HOSTS: list[str] = []
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -110,21 +122,190 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
+LANGUAGE_CODE = "pt-br"
+TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+# STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Unfold configuration
+
+UNFOLD = {
+    "SITE_TITLE": "Django boilerplate with Unfold Admin",
+    "SITE_HEADER": "Admin Panel",
+    "SITE_URL": "/",
+    "SITE_ICON": {
+        "light": lambda request: static("pages/img/icons/icon-light.png"),  # light mode
+        "dark": lambda request: static("pages/img/icons/icon-dark.svg"),  # dark mode
+    },
+    "LOGIN": {
+        "image": lambda request: static("pages/img/backgrounds/login-xl.png"),
+    },
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "type": "image/x-icon",
+            "href": lambda request: static("pages/img/icons/favicon.ico"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "57x57",
+            "href": lambda request: static("pages/img/icons/apple-icon-57x57.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "60x60",
+            "href": lambda request: static("pages/img/icons/apple-icon-60x60.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "72x72",
+            "href": lambda request: static("pages/img/icons/apple-icon-72x72.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "76x76",
+            "href": lambda request: static("pages/img/icons/apple-icon-76x76.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "114x114",
+            "href": lambda request: static("pages/img/icons/apple-icon-114x114.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "120x120",
+            "href": lambda request: static("pages/img/icons/apple-icon-120x120.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "144x144",
+            "href": lambda request: static("pages/img/icons/apple-icon-144x144.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "152x152",
+            "href": lambda request: static("pages/img/icons/apple-icon-152x152.png"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "type": "image/png",
+            "sizes": "180x180",
+            "href": lambda request: static("pages/img/icons/apple-icon-180x180.png"),
+        },
+        {
+            "rel": "icon",
+            "type": "image/png",
+            "sizes": "192x192",
+            "href": lambda request: static("pages/img/icons/android-icon-192x192.png"),
+        },
+        {
+            "rel": "icon",
+            "type": "image/png",
+            "sizes": "32x32",
+            "href": lambda request: static("pages/img/icons/favicon-32x32.png"),
+        },
+        {
+            "rel": "icon",
+            "type": "image/png",
+            "sizes": "96x96",
+            "href": lambda request: static("pages/img/icons/favicon-96x96.png"),
+        },
+        {
+            "rel": "icon",
+            "type": "image/png",
+            "sizes": "16x16",
+            "href": lambda request: static("pages/img/icons/favicon-16x16.png"),
+        },
+        {
+            "rel": "manifest",
+            "href": lambda request: static("pages/img/icons/manifest.json"),
+        },
+        {
+            "rel": "shortcut icon",
+            "type": "image/ico",
+            "href": lambda request: static("pages/img/icons/favicon.ico"),
+        },
+    ],
+    "COLORS": {
+        "font": {
+            "subtle-light": "107 114 128",
+            "subtle-dark": "156 163 175",
+            "default-light": "75 85 99",
+            "default-dark": "209 213 219",
+            "important-light": "17 24 39",
+            "important-dark": "243 244 246",
+        },
+        "primary": {
+            "50": "#fef5ee",
+            "100": "#fde7d7",
+            "200": "#fbcbad",
+            "300": "#f8a779",
+            "400": "#f47843",
+            "500": "#f15a25",  # base orange
+            "600": "#e23c14",
+            "700": "#bb2b13",
+            "800": "#952417",
+            "900": "#782016",
+            "950": "#410d09",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": _("App"),
+                "items": [
+                    {
+                        "title": _("Dashboard"),
+                        "icon": "dashboard",
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+            {
+                "title": _("Admin"),
+                "icon": "lock",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Usuários"),
+                        "icon": "people",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
+                        "permission": lambda request: request.user.is_superuser
+                        or request.user.is_staff,
+                    },
+                    {
+                        "title": _("Grupos"),
+                        "icon": "lock",
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                        "permission": lambda request: request.user.is_superuser
+                        or request.user.is_staff,
+                    },
+                ],
+            },
+        ],
+    },
+}
