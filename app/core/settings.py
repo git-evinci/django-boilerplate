@@ -8,7 +8,9 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+import random
+import string
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -19,13 +21,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-6qer$11(f2qkr+wkm_y%gj4rp8x2u$vsx09q_)sw(pufj@lcfm"
+#SECRET_KEY = "django-insecure-6qer$11(f2qkr+wkm_y%gj4rp8x2u$vsx09q_)sw(pufj@lcfm"
+SECRET_KEY = str(os.getenv("SECRET_KEY"))
+if not SECRET_KEY:
+    SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for i in range(32))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+DEBUG = os.getenv("DEBUG") == "True"
 
 # ALLOWED_HOSTS = [] #original code django
-ALLOWED_HOSTS: list[str] = []
+#ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 
 # Application definition
 
@@ -36,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "core",
 ]
 
 MIDDLEWARE = [
